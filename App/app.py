@@ -33,11 +33,14 @@ def load_env_file(path):
 load_env_file(PROJECT_DIR / '.env')
 load_env_file(PROJECT_DIR / '.env.local')
 
+users_file_default = Path('/tmp/access_users.json') if os.environ.get('VERCEL') else DATA_DIR / 'access_users.json'
+USERS_FILE = Path(os.environ.get('ACCESS_USERS_FILE', str(users_file_default)))
+
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'dev-only-change-this-secret-key')
+app.secret_key = os.environ.get('SECRET_KEY') or (os.urandom(32) if os.environ.get('VERCEL') else 'dev-only-change-this-secret-key')
 PER_PAGE = 10
 PREVIEW_LIMIT = 100
-ACCESS_NOTIFICATION_RECIPIENTS = ['jak.ghazy2004@gmail.com', 'ag1dx@proton.me']
+ACCESS_NOTIFICATION_RECIPIENTS = [email.strip() for email in os.environ.get('ACCESS_NOTIFICATION_RECIPIENTS', '').split(',') if email.strip()]
 APP_BASE_URL = os.environ.get('APP_BASE_URL', 'http://127.0.0.1:5000')
 SMTP_HOST = os.environ.get('SMTP_HOST')
 SMTP_PORT = int(os.environ.get('SMTP_PORT', '587'))
@@ -50,8 +53,19 @@ ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', '').strip().lower()
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', '')
 ADMIN_NAME = os.environ.get('ADMIN_NAME', 'Admin').strip() or 'Admin'
 
-with open(DATA_DIR / 'cleaned_members.json', encoding='utf-8') as f:
-    data = json.load(f)
+MISSING_DATA_NOTICE = 'Private data file is not available in this deployment. Add private storage or deploy with a secure data source.'
+
+
+def load_member_data():
+    data_file = DATA_DIR / os.environ.get('MEMBERS_DATA_FILE', 'cleaned_members.json')
+    if not data_file.exists():
+        print(f'Member data file not found: {data_file}')
+        return {}
+    with open(data_file, encoding='utf-8') as f:
+        return json.load(f)
+
+
+data = load_member_data()
 
 
 def now_iso():
@@ -59,8 +73,8 @@ def now_iso():
 
 
 def send_access_request_email(name, email, reason):
-    if not SMTP_HOST or not SMTP_FROM:
-        return False, 'SMTP email is not configured.'
+    if not SMTP_HOST or not SMTP_FROM or not ACCESS_NOTIFICATION_RECIPIENTS:
+        return False, 'SMTP email recipients or SMTP settings are not configured.'
 
     admin_url = f"{APP_BASE_URL.rstrip('/')}/admin"
     message = EmailMessage()
@@ -510,7 +524,7 @@ BASE_HEAD = '''
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mansoura Uni Leaked data-base</title>
+    <title>Mansoura Uni data-base</title>
     <link rel="icon" href="{{ url_for('logo') }}">
     ''' + APP_CSS + '''
 </head>
@@ -521,7 +535,7 @@ HERO = '''
 <section class="hero">
     <div class="brand">
         <p class="eyebrow">Mansoura University Directory</p>
-        <h1>Mansoura Uni Leaked data-base</h1>
+        <h1>Mansoura Uni data-base</h1>
         <p class="subtitle">
             A protected, searchable staff and member directory for names, jobs, workplaces,
             phone numbers, and university sections.
@@ -547,6 +561,7 @@ INDEX_TEMPLATE = BASE_HEAD + '''
     <main class="shell">
         ''' + HERO + '''
         <section class="panel">
+            {% if missing_data_notice %}<p class="error">{{ missing_data_notice }}</p>{% endif %}
             <form method="get" class="toolbar">
                 <div>
                     <label class="search-label" for="q">Search the database</label>
@@ -933,6 +948,7 @@ def index():
         visible_count=visible_count,
         matched_count=matched_count,
         total_count=len(all_entries),
+        missing_data_notice=MISSING_DATA_NOTICE if not data else None,
         access_limited=access_limited,
         preview_limit=PREVIEW_LIMIT,
         user=user,
@@ -941,6 +957,10 @@ def index():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
+
 
 
 

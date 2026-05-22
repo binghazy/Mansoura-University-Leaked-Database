@@ -1,6 +1,6 @@
-# Mansoura Uni Leaked Database
+# Mansoura Uni Data Portal
 
-A private, access-controlled Flask application for browsing an internal directory dataset. The project is designed so the application code can live in GitHub while sensitive data and local access records stay out of the repository.
+A private, access-controlled Flask application for browsing an internal directory dataset. The repository is prepared so application code can be uploaded to GitHub and deployed on Vercel while sensitive JSON data, local users, and secrets stay out of the repo.
 
 ![Logo](Assets/readme.png)
 
@@ -11,7 +11,7 @@ This app provides a protected search interface for approved users only. Access i
 ## Access Levels
 
 - **Pending**: User has requested access and is waiting for admin approval.
-- **Preview**: User can view a limited subset of records.
+- **Preview**: User can search and view only the first approved preview records.
 - **Full**: User can view the full approved dataset.
 - **Admin**: User can approve, contact, or delete access requests.
 
@@ -23,11 +23,12 @@ This app provides a protected search interface for approved users only. Access i
 - Preview and full-access roles.
 - Search by available record fields.
 - Paginated results.
-- Local email notification support for new access requests.
+- Email notification support for new access requests.
+- Vercel-ready Python entry point.
 
 ## Private Files
 
-The real data files and local access records are intentionally not committed to GitHub. Keep these files private and provide them only through a secure deployment process or private storage service.
+The real data files and local access records are intentionally not committed to GitHub.
 
 Ignored by default:
 
@@ -44,7 +45,7 @@ Use `.env.example` as a safe template for required environment variables.
 Install dependencies:
 
 ```bash
-pip install flask werkzeug
+pip install -r requirements.txt
 ```
 
 Run the app from the project root:
@@ -59,32 +60,20 @@ Open locally:
 http://127.0.0.1:5000
 ```
 
-## Email Notifications
+If no `ADMIN_EMAIL` and `ADMIN_PASSWORD` are configured, create the first local admin at:
 
-To receive access request notifications, create a private `.env.local` file from `.env.example` and fill in SMTP settings. Do not commit real SMTP credentials.
-
-Required values:
-
-```env
-SECRET_KEY=
-APP_BASE_URL=
-SMTP_HOST=
-SMTP_PORT=587
-SMTP_USERNAME=
-SMTP_PASSWORD=
-SMTP_FROM=
-SMTP_USE_SSL=false
+```text
+http://127.0.0.1:5000/setup-admin
 ```
-
-For mail providers that require app passwords, use an app password instead of your normal account password.
 
 ## Vercel Admin Login
 
-For hosted deployments, create an admin account through environment variables instead of committing credentials or relying on local JSON storage.
+For Vercel, create an admin account through environment variables instead of committing credentials.
 
 Set these privately in Vercel Project Settings:
 
 ```env
+SECRET_KEY=
 ADMIN_EMAIL=
 ADMIN_PASSWORD=
 ADMIN_NAME=Admin
@@ -92,9 +81,58 @@ ADMIN_NAME=Admin
 
 Use a strong unique password. Do not commit real admin credentials to GitHub.
 
-## Deployment Notes
+## Email Notifications
 
-For public hosting, do not rely on writable local JSON files for approvals or data. Use a managed private database or storage service for production.
+To receive access request notifications, configure SMTP environment variables locally or in Vercel.
+
+```env
+APP_BASE_URL=
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_USERNAME=
+SMTP_PASSWORD=
+SMTP_FROM=
+SMTP_USE_SSL=false
+ACCESS_NOTIFICATION_RECIPIENTS=
+```
+
+For mail providers that require app passwords, use an app password instead of your normal account password.
+
+## GitHub Upload Checklist
+
+Before pushing:
+
+- Confirm `.gitignore` includes private JSON and `.env` files.
+- Confirm `Data/*.json` is not staged.
+- Commit only code, assets, config, and safe examples.
+- Keep the GitHub repo private unless you have moved all sensitive data to private storage.
+
+Useful check:
+
+```bash
+git status
+```
+
+## Vercel Deployment
+
+This repo includes:
+
+- `vercel.json` for routing all requests to the Flask app.
+- `api/index.py` as the Vercel Python entry point.
+- `requirements.txt` for Python dependencies.
+- `.vercelignore` to avoid uploading private local files from the CLI.
+
+After importing the GitHub repo into Vercel:
+
+- Add the environment variables from `.env.example`.
+- Redeploy after changing environment variables.
+- Log in with your configured `ADMIN_EMAIL` and `ADMIN_PASSWORD`.
+
+## Data Storage Note
+
+The app can boot on Vercel without the private dataset, but it will show an empty-data notice until a secure data source is connected or private data is provided through a safe deployment process.
+
+Do not rely on local JSON writes for permanent production approvals on Vercel. Use a managed private database or storage service for production persistence.
 
 Recommended production structure:
 
@@ -114,3 +152,4 @@ Recommended production structure:
 ## Status
 
 Private internal tool. Access is by approval only.
+
