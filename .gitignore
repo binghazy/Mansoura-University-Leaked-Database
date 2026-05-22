@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.env
+.env.*
+!/.env.example
+Data/cleaned_members.json
+Data/member_search_results.json
+Data/access_users.json
