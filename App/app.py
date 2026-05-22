@@ -34,7 +34,8 @@ load_env_file(PROJECT_DIR / '.env')
 load_env_file(PROJECT_DIR / '.env.local')
 
 users_file_default = Path('/tmp/access_users.json') if os.environ.get('VERCEL') else DATA_DIR / 'access_users.json'
-USERS_FILE = Path(os.environ.get('ACCESS_USERS_FILE', str(users_file_default)))
+users_file_override = os.environ.get('ACCESS_USERS_FILE')
+USERS_FILE = Path(users_file_override) if users_file_override else users_file_default
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY') or (os.urandom(32) if os.environ.get('VERCEL') else 'dev-only-change-this-secret-key')
@@ -57,7 +58,7 @@ MISSING_DATA_NOTICE = 'Private data file is not available in this deployment. Ad
 
 
 def load_member_data():
-    data_file = DATA_DIR / os.environ.get('MEMBERS_DATA_FILE', 'cleaned_members.json')
+    data_file = DATA_DIR / (os.environ.get('MEMBERS_DATA_FILE') or 'cleaned_members.json')
     if not data_file.exists():
         print(f'Member data file not found: {data_file}')
         return {}
@@ -957,6 +958,7 @@ def index():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 
 
