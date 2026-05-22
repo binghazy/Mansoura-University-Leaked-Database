@@ -1,4 +1,4 @@
-# Mansoura Uni Data Portal
+# Mansoura Uni Leaked Data-Base
 
 A private, access-controlled Flask application for browsing an internal directory dataset. The repository is prepared so application code can be uploaded to GitHub and deployed on Vercel while sensitive JSON data, local users, and secrets stay out of the repo.
 
