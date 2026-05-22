@@ -8,6 +8,38 @@ A private, access-controlled Flask application for browsing an internal director
 
 This app provides a protected search interface for approved users only. Access is managed by an administrator, and users can be assigned limited preview access or full access.
 
+## ⚠️ DISCLAIMER
+
+**IMPORTANT LEGAL NOTICE:**
+
+This project is provided strictly for **educational and informational purposes only**. By accessing, using, or forking this repository, you acknowledge and agree to the following:
+
+### Data Responsibility
+- **The creator of this project is NOT responsible** for any misuse, unauthorized access, distribution, or illegal use of this data or application.
+- **The original data was NOT obtained by the creator** of this project. The source dataset was provided externally.
+- The creator does not claim ownership of the data and assumes no liability for its accuracy, completeness, or legality of its source.
+
+### Legal Compliance
+- Users are **solely responsible** for ensuring their use of this data and application complies with all applicable local, state, national, and international laws and regulations.
+- Unauthorized access to or distribution of private data may violate privacy laws, data protection regulations (GDPR, CCPA, etc.), and criminal statutes.
+- Users agree to use this project only in lawful and ethical ways.
+
+### No Warranty
+- This project is provided "AS-IS" without any warranties, express or implied.
+- The creator makes no representations regarding the accuracy, reliability, or completeness of the data.
+- The creator is not liable for any damages, losses, or consequences arising from the use of this project.
+
+### Ethical Use
+- If this data contains personal information of individuals who did not consent to its public exposure, users should consider the ethical implications of using it.
+- Respect the privacy and rights of all individuals whose data may be included.
+
+### Removal Request
+If you believe your personal data is included in this project and should not be publicly available, please contact the repository owner immediately.
+
+---
+
+**By using this project, you assume all responsibility and liability for your actions.**
+
 ## Access Levels
 
 - **Pending**: User has requested access and is waiting for admin approval.
