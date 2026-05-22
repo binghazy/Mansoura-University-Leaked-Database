@@ -40,6 +40,8 @@ If you believe your personal data is included in this project and should not be 
 
 **By using this project, you assume all responsibility and liability for your actions.**
 
+![screenshot](Assets/screen1.png)
+
 ## Access Levels
 
 - **Pending**: User has requested access and is waiting for admin approval.
